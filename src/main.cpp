@@ -1,31 +1,37 @@
 #include <raylib.h>
+#include "Player.h"
+#include "Turret.h"
+
+#define UNIT_SIZE 64
 
 int main() {
-    int playerX = 400;
-    int playerY = 400;
-    Color green = {20, 160, 133, 255};
+    const int screenWidth = UNIT_SIZE * 10;
+    const int screenHeight = UNIT_SIZE * 15;
+    // Color green = {20, 160, 133, 255};
+    InitWindow(screenWidth, screenHeight, "Dodge-a-Bit");
 
-
-    InitWindow(800, 800, "Dodge-a-Bit");
     SetTargetFPS(60);
 
-    while (WindowShouldClose() == false) {
+    Player player({screenWidth/2, screenHeight - UNIT_SIZE*2});
+    Turret turret({UNIT_SIZE, UNIT_SIZE*2});
+
+    while (!WindowShouldClose()) {
+        float deltaTime = GetFrameTime();
+
         // Event Handling
-
-
-        // Update Position
-        if (IsKeyDown(KEY_RIGHT)){
-            playerX += 3;
+        if (!player.GetIsHit() && turret.GetIsActive() && CheckCollisionRecs(player.GetHitbox(), turret.GetLaserHitbox())){
+            player.TakeHit();
         }
 
-        
-
+        player.Update(deltaTime);
+        turret.Update(deltaTime);
 
         // Drawing
         BeginDrawing();
-        ClearBackground(green);
+        ClearBackground(BLACK);
 
-        DrawRectangle(playerX, playerY, 20, 20, BLUE);
+        turret.Draw();
+        player.Draw();
 
         EndDrawing();
     }
