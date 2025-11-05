@@ -1,15 +1,20 @@
 #include "Turret.h"
+extern unsigned char testByte;
 
-Turret::Turret(const Vector2& basePos) : activeDuration(1.0f), position(basePos), isActive(false), activeTimer(0.0f) {}
+Turret::Turret(const Vector2& basePos, int i) : activeDuration(1.0f), fireTimer(0.0f), fireInterval(2.0f), index(i), position(basePos), isActive(false), activeTimer(0.0f){}
 Turret::~Turret() {}
 
-void Turret::Update(float deltaTime) {
-    if (IsKeyDown(KEY_ENTER)){
-        isActive = true;
-    }
-
-
-    if (isActive) {
+void Turret::Update(float deltaTime) { 
+    if (!isActive) {
+        fireTimer += deltaTime;
+        if (fireTimer >= fireInterval){
+            fireTimer = 0.0f;
+            if ((testByte >> (7 - index)) & 1){
+                FireTurret();
+            }
+            
+        }
+    } else {
         activeTimer += deltaTime;
         if (activeTimer >= activeDuration) {
             isActive = false;

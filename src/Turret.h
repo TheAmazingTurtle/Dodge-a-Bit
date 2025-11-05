@@ -5,7 +5,7 @@
 class Turret {
 public:
     // Constructor / Destructor
-    Turret(const Vector2& basePos);
+    Turret(const Vector2& basePos, int index);
     ~Turret();
 
     // Methods
@@ -20,7 +20,11 @@ public:
 
 private:
     const float activeDuration;
+    float fireTimer;
+    float fireInterval;
+    
     // Texture2D texture;
+    int index;
     Vector2 position;
     bool isActive;
     float activeTimer;

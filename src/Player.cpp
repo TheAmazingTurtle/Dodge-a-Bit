@@ -1,10 +1,37 @@
 #include "Player.h"
+#include <iostream>
 
-Player::Player(const Vector2& startPos) : invincibilityDuration(1.0f), invincibilityTimer(0.0f), position(startPos), life(3), speed(200.0f), isHit(false), isLifeDeducted(false) {}
-
+Player::Player(const Vector2& startPos) : invincibilityDuration(1.0f), invincibilityTimer(0.0f), isFacingRight(false), isDashing(false), dashTimer(0.0f), dashDuration(0.13f), dashSpeed(700.0f), position(startPos), life(3), speed(200.0f), isHit(false), isLifeDeducted(false) {}
 Player::~Player() {}
 
 void Player::Update(float deltaTime) {
+    if (IsKeyPressed(KEY_RIGHT)) {
+        std::cout << "player facing RIGHT\n";
+        isFacingRight = true;
+    }
+    if (IsKeyPressed(KEY_LEFT)) {
+        std::cout << "player facing LEFT\n";
+        isFacingRight = false;
+    }
+    if ((IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT)) && !isDashing){
+        isDashing = true;
+        dashTimer = 0.0f;
+    }
+    
+    if (isDashing){
+        // DASH MOVEMENT
+        if (isFacingRight) position.x += dashSpeed * deltaTime;
+        else position.x -= dashSpeed * deltaTime;
+        
+        dashTimer += deltaTime;
+        if (dashTimer >= dashDuration) isDashing = false;
+
+    } else {
+        // LEFT & RIGHT Movement
+        if (IsKeyDown(KEY_LEFT)) position.x -= speed * deltaTime;
+        if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
+    }
+ 
     // Laser Collision
     if (isHit){
         if (!isLifeDeducted) {
@@ -18,13 +45,7 @@ void Player::Update(float deltaTime) {
             isLifeDeducted = false;
             invincibilityTimer = 0.0f;
         }
-
     }
-
-
-    // LEFT & RIGHT Movement
-    if (IsKeyDown(KEY_A)) position.x -= speed * deltaTime;
-    if (IsKeyDown(KEY_D)) position.x += speed * deltaTime;
 
     ClampToScreen();
 }
@@ -63,9 +84,9 @@ void Player::ClampToScreen() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 
-    if (position.x < 0) position.x = 0;
+    if (position.x <= 64) position.x = 64;
     if (position.y < 0) position.y = 0;
-    if (position.x > screenWidth - 48) position.x = screenWidth - 48;
+    if (position.x >= screenWidth - 110) position.x = screenWidth - 110;
     if (position.y > screenHeight - 64) position.y = screenHeight - 64;
 }
 

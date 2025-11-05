@@ -26,6 +26,13 @@ private:
     const float invincibilityDuration;
     float invincibilityTimer;
 
+    // for dash
+    bool isFacingRight;
+    bool isDashing;
+    float dashTimer;
+    float dashDuration;
+    float dashSpeed;
+
     Texture2D texture;
     Vector2 position;
     int life;
