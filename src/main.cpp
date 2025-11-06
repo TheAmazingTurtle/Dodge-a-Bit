@@ -3,8 +3,9 @@
 #include "HUD.h"
 #include "Player.h"
 #include "Turret.h"
+#include "GameOverScreen.h"
 #include <vector>
-
+#include <iostream>
 
 #define UNIT_SIZE 64
 #define NUM_TURRETS 8
@@ -27,11 +28,12 @@ int main() {
     SetTargetFPS(60);
 
     // GAME STATE
-    GameState gameState = GameState :: GameOngoing;
+    GameState gameState = GameState::StartScreen;
 
     // START SCREEN
-    StartScreen startScreen({});
-
+    StartScreen startScreen;
+    GameOverScreen gameOverScreen;
+   
     // WAVE TRACKING
     int currentWave = 1;
     int recordedHighestWave = 1;
@@ -51,10 +53,7 @@ int main() {
 
     // PLAYING
     Player player({screenWidth/2, screenHeight - UNIT_SIZE*2});
-    HUD hud({});
-
-    
-    
+    HUD hud;
 
     while (!WindowShouldClose()) {
         float deltaTime = GetFrameTime();
@@ -64,7 +63,14 @@ int main() {
         switch (gameState) {
             case GameState::StartScreen:
                 startScreen.Draw();
+                startScreen.Update();
+                if (startScreen.IsPlayPressed()) gameState = GameState::GameOngoing;
+                if (startScreen.IsExitPressed()) {
+                    CloseWindow();
+                    return 0;
+                }
                 break;
+
             case GameState::GameOngoing:
                 player.Update(deltaTime);
                 
@@ -85,16 +91,23 @@ int main() {
                 player.Draw();
                 hud.Draw(player, currentWave, recordedHighestWave);
                 
-                break;
+                break;  
 
-            case GameState::GameOver:
+            case GameState::GameOver: 
+                gameOverScreen.Draw();
+                gameOverScreen.SetWaveReached(currentWave);
+                gameOverScreen.Update();
+                if (gameOverScreen.IsTryAgainPressed()) gameState = GameState::GameOngoing;
+                if (gameOverScreen.IsExitPressed()) {
+                    CloseWindow();
+                    return 0;
+                }
                 break;
-            case GameState::GameWin:
+            
+            case GameState::GameWin: 
                 break;
+            
         }
-
-
-        
 
         // Drawing
 

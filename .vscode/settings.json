@@ -10,6 +10,7 @@
 	},
 	"files.associations": {
 		"*.embeddedhtml": "html",
-		"string": "cpp"
+		"string": "cpp",
+		"iostream": "cpp"
 	}
 }

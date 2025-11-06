@@ -1,7 +1,7 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player(const Vector2& startPos) : invincibilityDuration(1.0f), invincibilityTimer(0.0f), isFacingRight(false), isDashing(false), dashTimer(0.0f), dashDuration(0.13f), dashSpeed(700.0f), position(startPos), life(3), speed(200.0f), isHit(false), isLifeDeducted(false) {}
+Player::Player(const Vector2& startPos) : invincibilityDuration(1.0f), invincibilityTimer(0.0f), isFacingRight(false), isDashing(false), dashTimer(0.0f), dashDuration(0.2f), dashSpeed(700.0f), position(startPos), life(3), speed(200.0f), isHit(false), isLifeDeducted(false) {}
 Player::~Player() {}
 
 void Player::Update(float deltaTime) {

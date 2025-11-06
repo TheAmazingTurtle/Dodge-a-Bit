@@ -2,19 +2,16 @@
 #include <raylib.h>
 #include "Button.h"
 
-enum class StartScreenAction {
+enum class GameOverScreenAction {
     None,
-    Play,
+    TryAgain,
     Exit,
-    ToggleMusic,
-    ToggleSound,
-    DisplayInstructions
 };
 
-class StartScreen {
+class GameOverScreen {
 public:
-    StartScreen() ;
-    ~StartScreen();
+    GameOverScreen() ;
+    ~GameOverScreen();
 
     // Methods
     // void LoadResources();
@@ -23,40 +20,32 @@ public:
     void Draw() const;
     void Update();
 
-    bool IsPlayPressed() const;
-    // bool IsMusicPressed() const;
-    // bool IsSoundPressed() const;
-    // bool IsInstructionPressed() const;
+    bool IsTryAgainPressed() const;
     bool IsExitPressed() const;
 
+    void SetWaveReached(int waveNumber);
     // void SetIconSize();
     // void SetIconPadding();
     // void SetBasePosition();
 
 private:
-    StartScreenAction startAction;
+   GameOverScreenAction gameOverAction;
     
-    Button playButton;
-    Button musicButton; 
-    Button soundButton;
-    Button instructionsButton;
+    Button tryAgainButton;
     Button exitButton;
 
-    bool isMusicOn;
-    bool isSoundOn;
-    bool isInstructionDisplayed;
-    
     // Data members
     // int iconSize = 30; 
     // int iconPadding = 8;
     // int baseX = 50;
     // int baseY = 30;
+    int waveReached; 
 
     // Texture2D texture;
     // Vector2 position;
 
     //helper
-    void DrawGameTitle() const;
+    void DrawGameOverText() const;
     void DrawButtons() const;
 
 };
