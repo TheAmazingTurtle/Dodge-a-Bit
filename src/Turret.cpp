@@ -1,46 +1,49 @@
-#include "Turret.h"
+#include "Turret.hpp"
 extern unsigned char testByte;
 
-Turret::Turret(const Vector2& basePos, int i) : activeDuration(1.0f), fireTimer(0.0f), fireInterval(2.0f), index(i), position(basePos), isActive(false), activeTimer(0.0f){}
+Turret::Turret(const Vector2& basePos) : 
+    m_activeDuration(1.0f), 
+    m_fireTimer(0.0f), 
+    m_fireInterval(2.0f), 
+    m_position(basePos), 
+    m_isShooting(false), 
+    m_activeTimer(0.0f) {}
 Turret::~Turret() {}
 
-void Turret::Update(float deltaTime) { 
-    if (!isActive) {
-        fireTimer += deltaTime;
-        if (fireTimer >= fireInterval){
-            fireTimer = 0.0f;
-            if ((testByte >> (7 - index)) & 1){
-                FireTurret();
-            }
-            
+void Turret::update(float deltaTime) { 
+    if (!m_isShooting) {
+        m_fireTimer += deltaTime;
+        if (m_fireTimer >= m_fireInterval){
+            m_fireTimer = 0.0f;
+            m_isShooting = true;
         }
     } else {
-        activeTimer += deltaTime;
-        if (activeTimer >= activeDuration) {
-            isActive = false;
-            activeTimer = 0.0f;
+        m_activeTimer += deltaTime;
+        if (m_activeTimer >= m_activeDuration) {
+            m_isShooting = false;
+            m_activeTimer = 0.0f;
         }
     }
 }
 
-void Turret::Draw() const {
-    DrawCircle(position.x + 32, position.y + 32, 32, WHITE);
+void Turret::draw() const {
+    DrawCircle(m_position.x + 32, m_position.y + 32, 32, WHITE);
 
-    if (isActive) DrawRectangle(position.x, position.y + 64, 64, 64*11, WHITE);
+    if (m_isShooting) DrawRectangle(m_position.x + 16, m_position.y + 64, 32, 64*12, WHITE);
 }
 
-void Turret::FireTurret() {
-    isActive = true;
+void Turret::shootLaser() {
+    m_isShooting = true;
 }
 
-Rectangle Turret::GetLaserHitbox() const {
-    return {position.x, position.y + 64, 64, 64*11};
+Rectangle Turret::getLaserHitbox() const {
+    return {m_position.x + 16, m_position.y + 64, 32, 64*12};
 }
 
-Vector2 Turret::GetPosition() const {
-    return position;
+Vector2 Turret::getPosition() const {
+    return m_position;
 }
 
-bool Turret::GetIsActive() const {
-    return isActive;
+bool Turret::getIsShooting() const {
+    return m_isShooting;
 }

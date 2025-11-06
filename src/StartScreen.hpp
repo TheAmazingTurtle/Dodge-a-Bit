@@ -1,17 +1,18 @@
 #pragma once
+#include "Screen.hpp"
 #include <raylib.h>
-// #include <string>
 
-class StartScreen {
+class StartScreen : public Screen {
 public:
     StartScreen() ;
     ~StartScreen();
 
+    void draw() const override;
+    void update(float deltaTime) override;
+
     // Methods
     // void LoadResources();
     // void UnloadResources();
-
-    void Draw() const;
     // void SetIconSize();
     // void SetIconPadding();
     // void SetBasePosition();
@@ -25,11 +26,4 @@ private:
 
     // Texture2D texture;
     // Vector2 position;
-
-    void DrawGameTitle() const;
-    void DrawPlayText() const;
-    void DrawMusicOnText() const;
-    void DrawSoundOnText() const;
-    void DrawInstructionsText() const;
-    void DrawExitText() const;
 };
