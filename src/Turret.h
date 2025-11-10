@@ -1,31 +1,27 @@
 #pragma once
 #include <raylib.h>
-// #include <string>
 
 class Turret {
 public:
-    // Constructor / Destructor
-    Turret(const Vector2& basePos, int index);
+    Turret(const Vector2& basePos);
     ~Turret();
 
-    // Methods
-    void Update(float deltaTime);
-    void Draw() const;
-    void FireTurret();
+    void update(float deltaTime);
+    void draw() const;
+    void shootLaser();
 
-    // Getter
-    Rectangle GetLaserHitbox() const;
-    Vector2 GetPosition() const;
-    bool GetIsActive() const;
+    void setIsActive(bool isActive);
+    Rectangle getLaserHitbox() const;
+    Vector2 getPosition() const;
+    bool getIsShooting() const;
 
 private:
-    const float activeDuration;
-    float fireTimer;
-    float fireInterval;
-    
-    // Texture2D texture;
-    int index;
-    Vector2 position;
-    bool isActive;
-    float activeTimer;
+    static const float m_activeDuration;
+
+    Vector2 m_position;
+
+    float m_fireTimer;
+    bool m_isShooting;
+    bool m_isActive;
+    float m_activeTimer;
 };

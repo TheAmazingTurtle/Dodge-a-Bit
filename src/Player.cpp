@@ -1,97 +1,111 @@
 #include "Player.h"
-#include <iostream>
 
-Player::Player(const Vector2& startPos) : invincibilityDuration(1.0f), invincibilityTimer(0.0f), isFacingRight(false), isDashing(false), dashTimer(0.0f), dashDuration(0.2f), dashSpeed(700.0f), position(startPos), life(3), speed(200.0f), isHit(false), isLifeDeducted(false) {}
+const float Player::m_invincibilityDuration = 1.0f;
+const float Player::m_dashDuration = 0.13f;
+const float Player::m_dashSpeed = 700.0f;
+const float Player::m_speed = 200.0f;
+const int Player::m_width = 48;
+const int Player::m_height = 64;
+
+Player::Player() : 
+    m_position({SCREEN_WIDTH/2, SCREEN_HEIGHT - UNIT_SIZE*2}), 
+    m_invincibilityTimer(0.0f),
+    m_life(3),
+    m_isHit(false), 
+    m_isLifeDeducted(false) ,
+    m_direction(Direction::Right), 
+    m_isDashing(false), 
+    m_dashTimer(0.0f)
+ {}
+
 Player::~Player() {}
 
-void Player::Update(float deltaTime) {
-    if (IsKeyPressed(KEY_RIGHT)) {
-        std::cout << "player facing RIGHT\n";
-        isFacingRight = true;
-    }
-    if (IsKeyPressed(KEY_LEFT)) {
-        std::cout << "player facing LEFT\n";
-        isFacingRight = false;
-    }
-    if ((IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT)) && !isDashing){
-        isDashing = true;
-        dashTimer = 0.0f;
+void Player::update(float deltaTime) {
+    if ((IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT)) && !m_isDashing){
+        m_isDashing = true;
+        m_dashTimer = 0.0f;
     }
     
-    if (isDashing){
-        // DASH MOVEMENT
-        if (isFacingRight) position.x += dashSpeed * deltaTime;
-        else position.x -= dashSpeed * deltaTime;
+    // dashing
+    if (m_isDashing){
+        switch (m_direction)
+        {
+        case Direction::Right:
+            m_position.x += m_dashSpeed * deltaTime;
+            break;
+        case Direction::Left:
+            m_position.x -= m_dashSpeed * deltaTime;
+            break;
+        }
         
-        dashTimer += deltaTime;
-        if (dashTimer >= dashDuration) isDashing = false;
+        m_dashTimer += deltaTime;
+        if (m_dashTimer >= m_dashDuration) m_isDashing = false;
 
     } else {
-        // LEFT & RIGHT Movement
-        if (IsKeyDown(KEY_LEFT)) position.x -= speed * deltaTime;
-        if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
+        if (IsKeyDown(KEY_LEFT)) {
+            m_direction = Direction::Left;
+            m_position.x -= m_speed * deltaTime;
+        }
+        if (IsKeyDown(KEY_RIGHT)) {
+            m_direction = Direction::Right;
+            m_position.x += m_speed * deltaTime;
+        }
+
     }
  
-    // Laser Collision
-    if (isHit){
-        if (!isLifeDeducted) {
-            life--;
-            isLifeDeducted = true;
+    // laser collision
+    if (m_isHit){
+        if (!m_isLifeDeducted) {
+            m_life--;
+            m_isLifeDeducted = true;
         }
 
-        invincibilityTimer += deltaTime;
-        if (invincibilityTimer >= invincibilityDuration){
-            isHit = false;
-            isLifeDeducted = false;
-            invincibilityTimer = 0.0f;
+        m_invincibilityTimer += deltaTime;
+        if (m_invincibilityTimer >= m_invincibilityDuration){
+            m_isHit = false;
+            m_isLifeDeducted = false;
+            m_invincibilityTimer = 0.0f;
         }
     }
 
-    ClampToScreen();
+    clampToScreen();
 }
 
-void Player::Draw() const {
-    DrawRectangle(position.x, position.y, 48, 64, isHit ? RED : WHITE);
+void Player::draw() const {
+    DrawRectangle(m_position.x, m_position.y, 48, 64, m_isHit ? RED : WHITE);
 }
 
-void Player::Move(float dx, float dy) {
-    position.x += dx;
-    position.y += dy;
+void Player::move(float dx, float dy) {
+    m_position.x += dx;
+    m_position.y += dy;
 }
 
-void Player::TakeHit() {
-    isHit = true;
+void Player::takeHit() {
+    m_isHit = true;
 }
 
-Rectangle Player::GetHitbox() const {
-    return {position.x, position.y, 48, 64};
+Rectangle Player::getHitbox() const {
+    return {m_position.x, m_position.y, 48, 64};
 }
 
-Vector2 Player::GetPosition() const {
-    return position;
+Vector2 Player::getPosition() const {
+    return m_position;
 }
 
-int Player::GetLife() const {
-    return life;
+int Player::getLivesLeft() const {
+    return m_life;
 }
 
-bool Player::GetIsHit() const {
-    return isHit;
+bool Player::getIsHit() const {
+    return m_isHit;
 }
 
-void Player::ClampToScreen() {
-    // Prevent player from leaving window boundaries
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
-
-    if (position.x <= 64) position.x = 64;
-    if (position.y < 0) position.y = 0;
-    if (position.x >= screenWidth - 110) position.x = screenWidth - 110;
-    if (position.y > screenHeight - 64) position.y = screenHeight - 64;
+void Player::clampToScreen() {
+    if (m_position.x <= 64) m_position.x = 64;
+    if (m_position.y < 0) m_position.y = 0;
+    if (m_position.x >= SCREEN_WIDTH - 110) m_position.x = SCREEN_WIDTH - 110;
+    if (m_position.y > SCREEN_HEIGHT - 64) m_position.y = SCREEN_HEIGHT - 64;
 }
-
-
-
 
 // Player::Player(const Vector2& startPos, const std::string& texturePath)
 //     : position(startPos), health(100), speed(200.0f) // pixels per second

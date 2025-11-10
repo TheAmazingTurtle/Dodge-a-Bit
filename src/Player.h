@@ -1,45 +1,47 @@
 #pragma once
 #include <raylib.h>
-// #include <string>
+#include "config.h"
 
 class Player {
 public:
     // Constructor / Destructor
     // Player(const Vector2& startPos, const std::string& texturePath);
+    Player();
     Player(const Vector2& startPos);
     ~Player();
 
     // Methods
-    void Update(float deltaTime);
-    void Draw() const;
-    void Move(float dx, float dy);
-    void TakeHit();
+    void update(float deltaTime);
+    void draw() const;
+    void move(float dx, float dy);
+    void takeHit();
+    void resetValues();
 
     // Getters
-    Rectangle GetHitbox() const;
-    Vector2 GetPosition() const;
-    int GetLife() const;
-    bool GetIsHit() const;
+    Rectangle getHitbox() const;
+    Vector2 getPosition() const;
+    int getLivesLeft() const;
+    bool getIsHit() const;
 
 private:
-    // Data members
-    const float invincibilityDuration;
-    float invincibilityTimer;
+    static const float m_invincibilityDuration;
+    static const float m_dashDuration;
+    static const float m_dashSpeed;
+    static const float m_speed;
+    static const int m_width;
+    static const int m_height;
+    
+    Texture2D m_texture;
+    Vector2 m_position;
+    
+    float m_invincibilityTimer;
+    int m_life;
+    bool m_isHit;
+    bool m_isLifeDeducted;
 
-    // for dash
-    bool isFacingRight;
-    bool isDashing;
-    float dashTimer;
-    float dashDuration;
-    float dashSpeed;
+    Direction m_direction;
+    bool m_isDashing;
+    float m_dashTimer;
 
-    Texture2D texture;
-    Vector2 position;
-    int life;
-    float speed;
-    bool isHit;
-    bool isLifeDeducted;
-
-    // Internal helpers
-    void ClampToScreen();
+    void clampToScreen();
 };
