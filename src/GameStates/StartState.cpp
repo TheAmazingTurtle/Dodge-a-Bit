@@ -58,6 +58,8 @@ void StartState::Update(Game& game, float deltaTime) {
 }
 
 void StartState::Draw(Game& game) const {
+    ClearBackground(BLACK);
+
     const char* gameTitle = "Dodge-a-Bit";
     int fontSize = 50;
     int textWidth = MeasureText(gameTitle, fontSize);

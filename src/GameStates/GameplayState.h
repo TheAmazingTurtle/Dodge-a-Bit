@@ -1,5 +1,8 @@
 #pragma once
 #include "IGameState.h"
+#include "GameOverState.h"
+
+#include "../Game.h"
 #include "../Entities/Player.h"
 #include "../Entities/TurretOperator.h"
 #include "../Utils/UIRenderer.h"

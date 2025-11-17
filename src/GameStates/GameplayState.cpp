@@ -34,6 +34,10 @@ void GameplayState::Update(Game& game, float deltaTime){
         player.ResetHitFlags();
         turretOperator.resetCycleFlag();
     }
+
+    if (player.GetLivesLeft() <= 0) {
+        game.ChangeState(std::make_unique<GameOverState>());
+    }
 }
 
 void GameplayState::Draw(Game& game) const{
