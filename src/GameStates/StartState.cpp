@@ -1,5 +1,7 @@
 #include "StartState.h"
 
+
+
 StartState::StartState() :
     playButton("Play", { 0,0 }, { 200, 60 }),
     musicButton("Music: ON", { 0,0 }, { 200, 60 }),
@@ -42,7 +44,7 @@ void StartState::Update(Game& game, float deltaTime) {
             break;
         case ButtonAction::ToggleSound:
             Settings::GetInstance().ToggleSound();
-            musicButton.SetLabel(Settings::GetInstance().GetMusicOn() ? "Sound : ON" : "Sound : OFF");
+            soundButton.SetLabel(Settings::GetInstance().GetSoundOn() ? "Sound : ON" : "Sound : OFF");
             break;
         case ButtonAction::DisplayInstructions:
             Settings::GetInstance().ToggleInstructionDisplayed();

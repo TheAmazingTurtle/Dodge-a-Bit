@@ -3,23 +3,6 @@
 #include "Game.h"
 #include "GameStates/StartState.h"
 
-// void processStartScreen() {
-    
-//     startScreen.Update();
-//     if (startScreen.IsPlayPressed()) gameState = GameState::GameOngoing;
-//     if (startScreen.IsExitPressed()) {
-//         CloseWindow();
-//         return 0;
-//     }
-
-//     BeginDrawing();
-    
-//     ClearBackground(BLACK);
-//     startScreen.Draw();
-
-//     EndDrawing();
-// }
-
 int main() {
     Game game;
     game.ChangeState(std::make_unique<StartState>());
