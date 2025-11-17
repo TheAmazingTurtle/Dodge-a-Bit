@@ -51,6 +51,7 @@ private:
     BitwiseOperator getRandomBitwiseOperator() const;
     int generate8BitValue() const;
     int generateBitOffsetValue() const;
+    void decreaseDelay();
     void setTurrets();
 };
 

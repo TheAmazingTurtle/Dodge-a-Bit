@@ -62,6 +62,7 @@
 		"typeinfo": "cpp",
 		"variant": "cpp",
 		"bitset": "cpp",
-		"*.m": "cpp"
+		"*.m": "cpp",
+		"set": "cpp"
 	}
 }

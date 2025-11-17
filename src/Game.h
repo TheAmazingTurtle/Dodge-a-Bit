@@ -12,6 +12,7 @@ public:
 
     void Run();
     void ChangeState(std::unique_ptr<IGameState> newState);
+    void EndGame();
     bool IsRunning() const;
 private:
     std::unique_ptr<IGameState> currentState;

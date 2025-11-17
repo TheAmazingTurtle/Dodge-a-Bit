@@ -7,7 +7,7 @@ public:
     ~Button();
 
     void Draw() const;
-    bool IsPressed(Vector2 mousePos, bool isMousePressed);
+    bool IsPressed(Vector2 mousePos, bool isMousePressed) const;
 
     void SetPosition(Vector2 newPos);
     void SetLabel(const char *newLabel);

@@ -114,7 +114,7 @@ void TurretOperator::update(float deltaTime) {
                 m_actionTimer = 0;
 
                 generateNewEquation();
-                m_delay -= Config::EQUATION_DELAY_DECAY_RATE;
+                decreaseDelay();
 
                 m_cycleFinished = true;
                 m_displayState = DisplayState::Reveal;
@@ -204,6 +204,11 @@ int TurretOperator::generateBitOffsetValue() const {
     static std::uniform_int_distribution<int> dist(1, 8);
     return dist(rng);
 }
+
+void TurretOperator::decreaseDelay() {
+    if (m_delay <= Config::EQUATION_MINIMUM_DELAY) return;
+    m_delay -= Config::EQUATION_DELAY_DECAY_RATE;
+};
 
 void TurretOperator::setTurrets() {
     std::string bitString = toString(m_bitSequence);

@@ -20,7 +20,7 @@ void Button::Draw() const {
     DrawText(label, position.x + (scale.x - textWidth) / 2, textY, fontSize, textColor);
 }
 
-bool Button::IsPressed(Vector2 mousePos, bool isMousePressed){
+bool Button::IsPressed(Vector2 mousePos, bool isMousePressed) const {
     return isMousePressed && CheckCollisionPointRec(mousePos, {position.x,position.y,scale.x,scale.y});
 }
 

@@ -15,6 +15,7 @@ namespace Config {
 
     constexpr float EQUATION_COOLDOWN_DURATION = 1.0f;
     constexpr int EQUATION_DELAY_DECAY_RATE = 0.1f;
+    constexpr int EQUATION_MINIMUM_DELAY = 2.0f;
     constexpr float EQUATION_REVEAL_DURATION = 0.3f;
     constexpr int EQUATION_OPERATOR_FONT_SIZE = 30;
     constexpr int EQUATION_OPERAND_FONT_SIZE = 30;

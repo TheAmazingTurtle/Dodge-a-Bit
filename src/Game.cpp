@@ -6,7 +6,7 @@ void Game::Run() {
     InitWindow(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, "Dodge-a-Bit");
     SetTargetFPS(60);
 
-    while (running) {
+    while (running && !WindowShouldClose()) {
         float deltaTime = GetFrameTime();
 
         if (currentState) {
@@ -26,6 +26,10 @@ void Game::ChangeState(std::unique_ptr<IGameState> newState) {
 
     currentState = std::move(newState);
     currentState->Enter(*this);
+}
+
+void Game::EndGame() {
+    running = false;
 }
 
 bool Game::IsRunning() const { return running; }
