@@ -1,33 +1,31 @@
-#include "Guardian.h"
+#include "TurretOperator.h"
 #include <iostream>
 
-std::mt19937 Guardian::rng(std::random_device{}());
-const float Guardian::m_cooldownDuration = 1.5f;
-const float Guardian::m_revealDuration = 0.3f;
-const int Guardian::m_operatorFontSize = 30;
-const int Guardian::m_operandFontSize = 30;
-const int Guardian::m_textGap = 20;
+std::mt19937 TurretOperator::rng(std::random_device{}());
 
-Guardian::Guardian() :
+TurretOperator::TurretOperator() :
     m_bitSequence(0),
     m_operand(""),
     m_operator(""),
-    m_displayState(DisplayState::Hidden),
+    m_displayState(DisplayState::Reveal),
     m_delay(5.0f),
     m_actionTimer(0.0f),
     m_movementSpeed(0.0f),
-    m_textElevation(0.0f) {
+    m_textElevation(0.0f),
+    m_cycleFinished(false) {
 
         m_turrets.reserve(8);
-        float yTurretOffset = UNIT_SIZE * 2.0f;
-        float xTurretOffset = (SCREEN_WIDTH - (NUM_TURRETS * UNIT_SIZE)) / 2.0f;
-        for (int i = 0; i < NUM_TURRETS; i++){
-            Vector2 position = {xTurretOffset + (i* UNIT_SIZE), yTurretOffset};
+        float yTurretOffset = Config::UNIT_SIZE * 2.0f;
+        float xTurretOffset = (Config::SCREEN_WIDTH - (Config::TURRET_NUM * Config::UNIT_SIZE)) / 2.0f;
+        for (int i = 0; i < Config::TURRET_NUM; i++){
+            Vector2 position = {xTurretOffset + (i * Config::UNIT_SIZE), yTurretOffset};
             m_turrets.emplace_back(position);
         }
+
+        generateNewEquation();
     }
 
-void Guardian::generateNewEquation(){
+void TurretOperator::generateNewEquation(){
     int tentativeResult = 0;
     int operand = 0;
     BitwiseOperator bitwiseOperator;
@@ -83,25 +81,25 @@ void Guardian::generateNewEquation(){
     m_bitSequence = tentativeResult;
 
     m_operator = toString(bitwiseOperator);
-    m_operand = toBinaryString(operand);
+    m_operand = toString(operand);
 
-    m_movementSpeed = ((SCREEN_WIDTH/2 + m_textGap) - UNIT_SIZE*2) / ((m_delay - m_revealDuration) * 60);
+    m_movementSpeed = ((Config::SCREEN_WIDTH/2 + Config::EQUATION_TEXT_GAP) - Config::UNIT_SIZE*2) / ((m_delay - Config::EQUATION_REVEAL_DURATION) * 60);
 }
 
-void Guardian::update(float deltaTime) {
+void TurretOperator::update(float deltaTime) {
     for (Turret &turret: m_turrets) turret.update(deltaTime);
 
     m_actionTimer += deltaTime;
     switch (m_displayState) {
         case DisplayState::Reveal:
-            if (m_revealDuration <= m_actionTimer) {
+            if (Config::EQUATION_REVEAL_DURATION <= m_actionTimer) {
                 m_actionTimer = 0;
                 m_displayState = DisplayState::Travel;
             }
             break;
         case DisplayState::Travel:
             m_textElevation += m_movementSpeed;
-            if (m_delay - m_revealDuration <= m_actionTimer) {
+            if (m_delay - Config::EQUATION_REVEAL_DURATION <= m_actionTimer) {
                 m_actionTimer = 0;
                 m_textElevation = 0;
                 
@@ -112,11 +110,13 @@ void Guardian::update(float deltaTime) {
             }
             break;
         case DisplayState::Hidden:
-            if (m_cooldownDuration <= m_actionTimer) {
+            if (Config::EQUATION_COOLDOWN_DURATION <= m_actionTimer) {
                 m_actionTimer = 0;
 
                 generateNewEquation();
+                m_delay -= Config::EQUATION_DELAY_DECAY_RATE;
 
+                m_cycleFinished = true;
                 m_displayState = DisplayState::Reveal;
             }
         default: 
@@ -124,18 +124,27 @@ void Guardian::update(float deltaTime) {
     }
 }
 
-void Guardian::draw() const {
+void TurretOperator::draw() const {
     for (const Turret &turret : m_turrets) turret.draw();
 
     if (m_displayState == DisplayState::Hidden) return;
     const char* operatorText = TextFormat(m_operator.c_str());
-    const char* operandText = TextFormat(m_operand.c_str());
+    // const char* operandText = TextFormat(m_operand.c_str());
 
-    DrawText(operatorText, (SCREEN_WIDTH - MeasureText(operatorText, m_operatorFontSize))/2, SCREEN_WIDTH/2 - m_operatorFontSize - m_textGap - m_textElevation, m_operatorFontSize, WHITE);
-    DrawText(operandText, (SCREEN_WIDTH - MeasureText(operandText, m_operandFontSize))/2, SCREEN_WIDTH/2 + m_textGap - m_textElevation, m_operandFontSize, WHITE);
+    DrawText(operatorText, (Config::SCREEN_WIDTH - MeasureText(operatorText, Config::EQUATION_OPERATOR_FONT_SIZE))/2, Config::SCREEN_WIDTH/2 - Config::EQUATION_OPERATOR_FONT_SIZE - Config::EQUATION_TEXT_GAP - m_textElevation, Config::EQUATION_OPERATOR_FONT_SIZE, WHITE);
+    // DrawText(operandText, (Config::SCREEN_WIDTH - MeasureText(operandText, Config::EQUATION_OPERAND_FONT_SIZE))/2, Config::SCREEN_WIDTH/2 + Config::EQUATION_TEXT_GAP - m_textElevation, Config::EQUATION_OPERAND_FONT_SIZE, WHITE);
+
+
+    const char* p = m_operand.c_str();
+    for (int i = 0; *p != '\0'; i++, p++) {
+        const char* bitText = TextFormat("%c", *p);
+        DrawText(bitText, (Config::SCREEN_WIDTH - Config::UNIT_SIZE*Config::TURRET_NUM)/2 + Config::UNIT_SIZE*i + (Config::UNIT_SIZE - MeasureText(bitText, Config::EQUATION_OPERAND_FONT_SIZE))/2, Config::SCREEN_WIDTH/2 + Config::EQUATION_TEXT_GAP - m_textElevation, Config::EQUATION_OPERAND_FONT_SIZE, WHITE);
+    }
+
+
 }
 
-bool Guardian::doTurretsHit(Rectangle hitbox) const {
+bool TurretOperator::doTurretsHit(Rectangle hitbox) const {
     for (const Turret &turret : m_turrets) {
         if (turret.getIsShooting() && CheckCollisionRecs(hitbox, turret.getLaserHitbox())){
             return true;
@@ -145,7 +154,15 @@ bool Guardian::doTurretsHit(Rectangle hitbox) const {
     return false;
 }
 
-std::string Guardian::toString(BitwiseOperator bitwiseOperator) const {
+bool TurretOperator::isCycleFinished() const {
+    return m_cycleFinished;
+}
+
+void TurretOperator::resetCycleFlag() {
+    m_cycleFinished = false;
+}
+
+std::string TurretOperator::toString(BitwiseOperator bitwiseOperator) const {
     switch (bitwiseOperator) {
             case BitwiseOperator::NOT:  return "NOT";
             case BitwiseOperator::AND:  return "AND";
@@ -169,28 +186,28 @@ std::string Guardian::toString(BitwiseOperator bitwiseOperator) const {
         }
 }
 
-std::string Guardian::toBinaryString(int value) const {
+std::string TurretOperator::toString(int value) const {
     return std::bitset<8>(value).to_string();
 }
 
-BitwiseOperator Guardian::getRandomBitwiseOperator() const {
+TurretOperator::BitwiseOperator TurretOperator::getRandomBitwiseOperator() const {
     static std::uniform_int_distribution<int> dist(0, static_cast<int>(BitwiseOperator::END) - 1);
     return static_cast<BitwiseOperator>(dist(rng));
 }
 
-int Guardian::generate8BitValue() const {
+int TurretOperator::generate8BitValue() const {
     static std::uniform_int_distribution<int> dist(0, 255);
     return dist(rng);
 }
 
-int Guardian::generateBitOffsetValue() const {
+int TurretOperator::generateBitOffsetValue() const {
     static std::uniform_int_distribution<int> dist(1, 8);
     return dist(rng);
 }
 
-void Guardian::setTurrets() {
-    std::string bitString = toBinaryString(m_bitSequence);
-    for (int i = 0; i < NUM_TURRETS; i++) {
+void TurretOperator::setTurrets() {
+    std::string bitString = toString(m_bitSequence);
+    for (int i = 0; i < Config::TURRET_NUM; i++) {
         bool isTurretActive = bitString[i] == '1';
         m_turrets[i].setIsActive(isTurretActive);
     }
