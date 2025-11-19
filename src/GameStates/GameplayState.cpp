@@ -24,6 +24,8 @@ void GameplayState::Update(Game& game, float deltaTime){
             const int points = basePoints * (1 + combo * 0.2f);  
 
             score += points;
+            if (score > highScore) highScore = score;
+
             combo++;
         } else {
             combo = 0;
@@ -36,7 +38,10 @@ void GameplayState::Update(Game& game, float deltaTime){
     }
 
     if (player.GetLivesLeft() <= 0) {
-        game.ChangeState(std::make_unique<GameOverState>());
+        if (score > highScore){
+            highScore = score;
+        }
+        game.ChangeState(std::make_unique<GameOverState>(score, highScore));
     }
 }
 
