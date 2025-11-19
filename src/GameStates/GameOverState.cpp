@@ -1,6 +1,6 @@
 #include "GameOverState.h"
 
-GameOverState::GameOverState() :
+GameOverState::GameOverState(int finalScore, int highScore) : playerFinalScore(finalScore), recordedHighScore (highScore), 
     mainMenuButton("Main Menu", { 0,0 }, { 200, 60 }),
     tryAgainButton("Try Again", { 0,0 }, { 200, 60 }),
     exitButton("Exit", { 0,0 }, { 200, 60 }) {
@@ -53,13 +53,17 @@ void GameOverState::Draw(Game& game) const {
     // int highestWaveFontSize = 20;
     // int highestWaveTextWidth = MeasureText(highestWaveReachedText, highestWaveFontSize);
 
-    const char* waveReachedText = TextFormat("Wave Reached: %d", 0);
-    int waveFontSize = 30;
-    int waveTextWidth = MeasureText(waveReachedText, waveFontSize);
+    const char* highScoreText = TextFormat("High Score : %d", recordedHighScore);
+    const char* playerScoreText = TextFormat("Your Score : %d", playerFinalScore);
+    int highScoreFontSize = 20;
+    int playerScoreFontSize = 30;
+    int highScoreTextWidth = MeasureText(highScoreText, highScoreFontSize);
+    int playerScoreTextWidth = MeasureText(playerScoreText, playerScoreFontSize);
 
     DrawText(gameOverText, (GetScreenWidth() - gameOverTextWidth) / 2, 150, gameOverFontSize, RED);
     // DrawText(TextFormat("Highest Wave: %d", recordedHighestWave), baseX * 8.5, baseY + 8, 20, WHITE);
-    DrawText(waveReachedText,(GetScreenWidth() - waveTextWidth) / 2, 300, waveFontSize, WHITE);
+    DrawText(playerScoreText,(GetScreenWidth() - playerScoreTextWidth) / 2, 300, playerScoreFontSize, WHITE);
+    DrawText(highScoreText,(GetScreenWidth() - highScoreTextWidth) / 2, 350, highScoreFontSize, GREEN);
 
     mainMenuButton.Draw();
     tryAgainButton.Draw();
