@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameStates/IGameState.h"
+#include "GameStates/StartState.h"
 #include "Utils/Config.h"
 
 #include <raylib.h>

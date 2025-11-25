@@ -1,4 +1,4 @@
-#include "button.h"
+#include "Button.h"
 // #include <iostream>
 
 Button::Button(const char *buttonLabel, Vector2 buttonPosition, Vector2 buttonScale): label(buttonLabel), position(buttonPosition), scale(buttonScale), normalColor(DARKGRAY), hoverColor(GRAY), textColor(WHITE){}

@@ -1,4 +1,7 @@
 #pragma once
+
+#include "../Utils/Config.h"
+
 #include <raylib.h>
 
 class Turret {
@@ -16,11 +19,15 @@ public:
     bool getIsShooting() const;
 
 private:
-    static const float m_activeDuration;
+    static constexpr float m_activeDuration = 1.0f;
+    static constexpr int LASER_FRAME_COUNT = 14;
+    static constexpr int SHEET_UNIT_WIDTH = 2;
+    static constexpr int SHEET_UNIT_HEIGHT = 3;
+
+    Texture2D m_spriteSheet;
+    Texture2D m_laserSpriteSheet;
 
     Vector2 m_position;
-
-    float m_fireTimer;
     bool m_isShooting;
     bool m_isActive;
     float m_activeTimer;
