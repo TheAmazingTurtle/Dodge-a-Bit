@@ -3,6 +3,8 @@
 std::mt19937 TurretOperator::rng(std::random_device{}());
 
 TurretOperator::TurretOperator() :
+    m_progLvl(1),
+    m_numCycle(0),
     m_bitSequence(0),
     m_operand(""),
     m_operator(""),
@@ -155,8 +157,18 @@ void TurretOperator::generateNewEquation(){
 void TurretOperator::update(float deltaTime) {
     for (Turret &turret: m_turrets) turret.update(deltaTime);
 
+    switch (m_numCycle) {
+        case 0: m_progLvl = 1; break;
+        case 10: m_progLvl = 2; break;
+        case 15: m_progLvl = 3; break;
+        case 20: m_progLvl = 4; break;
+        case 25: m_progLvl = 5; break;
+        default: break;
+    }
+
     m_actionTimer += deltaTime;
     switch (m_displayState) {
+
         case DisplayState::Appear:
             if ((int)m_bubbleSpriteFrame.x < Config::UNIT_SIZE * 13){
                 if (m_actionTimer >= 1.0f/BUBBLE_FRAME_SPEED){
@@ -200,6 +212,7 @@ void TurretOperator::update(float deltaTime) {
 
                 m_cycleFinished = true;
                 m_displayState = DisplayState::Appear;
+                if (m_numCycle <= 25) m_numCycle++;
             }
             break;
 
@@ -286,7 +299,26 @@ std::string TurretOperator::toNumString(int value) const {
 }
 
 TurretOperator::BitwiseOperator TurretOperator::getRandomBitwiseOperator() const {
-    static std::uniform_int_distribution<int> dist(0, static_cast<int>(BitwiseOperator::END) - 1);
+    std::uniform_int_distribution<int> dist;
+    switch (m_progLvl) {
+        case 1:
+            dist = std::uniform_int_distribution<int>(static_cast<int>(BitwiseOperator::NOT), static_cast<int>(BitwiseOperator::XOR));
+            break;
+        case 2:
+            dist = std::uniform_int_distribution<int>(static_cast<int>(BitwiseOperator::SHR), static_cast<int>(BitwiseOperator::SHL));
+            break;
+        case 3:
+            dist = std::uniform_int_distribution<int>(static_cast<int>(BitwiseOperator::ROL), static_cast<int>(BitwiseOperator::ROR));
+            break;
+        case 4:
+            dist = std::uniform_int_distribution<int>(static_cast<int>(BitwiseOperator::SAR), static_cast<int>(BitwiseOperator::RCR));
+            break;
+        default:
+            dist = std::uniform_int_distribution<int>(static_cast<int>(BitwiseOperator::NOT), static_cast<int>(BitwiseOperator::END) - 1);
+            break;
+    }
+
+    
     return static_cast<BitwiseOperator>(dist(rng));
 }
 

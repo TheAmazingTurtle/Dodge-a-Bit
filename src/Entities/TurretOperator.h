@@ -30,9 +30,9 @@ private:
     };
 
     enum class BitwiseOperator {
-        NOT,
-        AND, OR, XOR,
-        SHR, SHL, ROL, ROR, SAR, RCL, RCR,
+        NOT, AND, OR, XOR,
+        SHR, SHL, ROL, ROR, 
+        SAR, RCL, RCR,
         END
     };
 
@@ -53,6 +53,8 @@ private:
     Texture2D m_bubbleSpriteSheet;
     Rectangle m_bubbleSpriteFrame;
 
+    int m_progLvl;
+    int m_numCycle;
     uint8_t m_bitSequence;
     std::string m_operand;
     std::string m_operator;
