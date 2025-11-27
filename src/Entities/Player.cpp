@@ -10,7 +10,8 @@ Player::Player() :
     m_frameCounter(0),
     m_dashTimer(0.0f),
     m_dashing(false),
-    m_dying(false) {
+    m_dying(false),
+    m_dead(false) {
 
     m_spriteSheet = LoadTexture("../../graphics/player-spritesheet.png");
 
@@ -27,52 +28,58 @@ Player::~Player() {
 void Player::Update(float deltaTime) {
     PlayerState newState = PlayerState::IDLE;
 
-    if (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT) || GetTouchPointCount() > 1) {
-        m_dashing = true;
-    }
-    
-    if (m_dashing) {
-        newState = PlayerState::DASHING;
-    } else if (IsKeyDown(KEY_LEFT)) {
-        m_direction = Direction::Left;
-        newState = PlayerState::WALKING;
-    } else if (IsKeyDown(KEY_RIGHT)) {
-        m_direction = Direction::Right;
-        newState = PlayerState::WALKING;
-    } else if (GetTouchPointCount() == 0) {
-        // skip
-    } else if (GetTouchPosition(0).x <= Config::SCREEN_WIDTH/2) {
-        m_direction = Direction::Left;
-        newState = PlayerState::WALKING;
-    } else if (GetTouchPosition(0).x > Config::SCREEN_WIDTH/2) {
-        m_direction = Direction::Right;
-        newState = PlayerState::WALKING;
-    }
-    
-    switch (newState)
-    {
-        case PlayerState::DASHING:
-            m_position.x += (m_direction == Direction::Right ? 1 : -1) * DASH_SPEED * deltaTime;
+    if (!m_dying) {
+        if (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT) || GetTouchPointCount() > 1) {
+            m_dashing = true;
+        }
+        
+        if (m_dashing) {
+            newState = PlayerState::DASHING;
+        } else if (IsKeyDown(KEY_LEFT)) {
+            m_direction = Direction::Left;
+            newState = PlayerState::WALKING;
+        } else if (IsKeyDown(KEY_RIGHT)) {
+            m_direction = Direction::Right;
+            newState = PlayerState::WALKING;
+        } else if (GetTouchPointCount() == 0) {
+            // skip
+        } else if (GetTouchPosition(0).x <= Config::SCREEN_WIDTH/2) {
+            m_direction = Direction::Left;
+            newState = PlayerState::WALKING;
+        } else if (GetTouchPosition(0).x > Config::SCREEN_WIDTH/2) {
+            m_direction = Direction::Right;
+            newState = PlayerState::WALKING;
+        }
+        
+        switch (newState)
+        {
+            case PlayerState::DASHING:
+                m_position.x += (m_direction == Direction::Right ? 1 : -1) * DASH_SPEED * deltaTime;
 
-            m_dashTimer += deltaTime;
-            if (m_dashTimer >= DASH_DURATION) {
-                m_dashTimer = 0.0f;
-                m_dashing = false;
+                m_dashTimer += deltaTime;
+                if (m_dashTimer >= DASH_DURATION) {
+                    m_dashTimer = 0.0f;
+                    m_dashing = false;
+                }
+                break;
+
+            case PlayerState::WALKING:
+                m_position.x += (m_direction == Direction::Right ? 1 : -1) * WALK_SPEED * deltaTime;
+                break;
+            default:
+                break;
+        }
+        clampToScreen();
+    
+        // laser collision
+        if (m_hit && !m_isLifeDeducted){
+            if (--m_life <= 0) {
+                m_dying = true;
             }
-            break;
-
-        case PlayerState::WALKING:
-            m_position.x += (m_direction == Direction::Right ? 1 : -1) * WALK_SPEED * deltaTime;
-            break;
-        default:
-            break;
-    }
-    clampToScreen();
- 
-    // laser collision
-    if (m_hit && !m_isLifeDeducted){
-        m_life--;
-        m_isLifeDeducted = true;
+            m_isLifeDeducted = true;
+        }
+    } else {
+        newState = PlayerState::DYING;
     }
 
     // Texture
@@ -80,7 +87,12 @@ void Player::Update(float deltaTime) {
     if (m_oldState == newState) {
         if (m_frameCounter >= 1.0f / FRAME_SPEED) {
             m_frameCounter = 0;
-             m_spriteFrame.x += m_frameWidth;
+            m_spriteFrame.x += m_frameWidth;
+
+            if (m_dying && m_spriteFrame.x > m_frameWidth*4) {
+                m_dead = true;
+                m_spriteFrame.x = m_frameWidth*4;
+            } 
         }
     } else {
         m_frameCounter = 0;
@@ -117,8 +129,8 @@ void Player::Update(float deltaTime) {
 }
 
 void Player::Draw() const {
-    DrawRectangle(m_position.x - 24, m_position.y - 64, 48, 64, m_hit ? RED : WHITE);
-    DrawTextureRec(m_spriteSheet, m_spriteFrame, {m_position.x - m_frameWidth/2, m_position.y - m_frameHeight}, WHITE);
+    // DrawRectangle(m_position.x - 24, m_position.y - 64, 48, 64, m_hit ? RED : WHITE);
+    DrawTextureRec(m_spriteSheet, m_spriteFrame, {m_position.x - m_frameWidth/2, m_position.y - m_frameHeight}, m_hit ? RED : WHITE);
 }
 
 void Player::Move(float dx, float dy) {
@@ -149,6 +161,10 @@ int Player::GetLivesLeft() const {
 
 bool Player::IsHit() const {
     return m_hit;
+}
+
+bool Player::isDead() const {
+    return m_dead;
 }
 
 void Player::clampToScreen() {

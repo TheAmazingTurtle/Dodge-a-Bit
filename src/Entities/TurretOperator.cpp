@@ -9,7 +9,7 @@ TurretOperator::TurretOperator() :
     m_operand(""),
     m_operator(""),
     m_displayState(DisplayState::Appear),
-    m_delay(5.0f),
+    m_delay(3.0f),
     m_actionTimer(0.0f),
     m_movementSpeed(0.0f),
     m_textElevation(0.0f),

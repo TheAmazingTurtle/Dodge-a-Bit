@@ -79,6 +79,9 @@ void GameplayState::Update(Game& game, float deltaTime){
         if (score > highScore){
             highScore = score;
         }
+    }
+
+    if (player.isDead()) {
         game.ChangeState(std::make_unique<GameOverState>(score, highScore, hasNewHighScore));
     }
 }

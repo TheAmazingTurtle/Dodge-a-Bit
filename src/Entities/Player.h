@@ -20,6 +20,7 @@ public:
     Vector2 GetPosition() const;
     int GetLivesLeft() const;
     bool IsHit() const;
+    bool isDead() const;
 
 private:
     enum class Direction {
@@ -65,6 +66,7 @@ private:
     float m_dashTimer;
     bool m_dashing;
     bool m_dying;
+    bool m_dead;
 
     void clampToScreen();
 };
