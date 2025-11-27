@@ -16,7 +16,7 @@ StartState::StartState() :
         float startY = 300;
         float spacing = 80;
 
-        Button* buttons[] = { &playButton, &musicButton, &soundButton, &instructionsButton, &exitButton };
+        Button* buttons[] = { &playButton, &instructionsButton, &musicButton, &soundButton, &exitButton };
 
         for (int i = 0; i < 5; i++) {
             buttons[i]-> SetPosition ({ centerX, startY + spacing * i });
@@ -60,16 +60,36 @@ void StartState::Update(Game& game, float deltaTime) {
 void StartState::Draw(Game& game) const {
     ClearBackground(BLACK);
 
-    const char* gameTitle = "Dodge-a-Bit";
+    const char* gameTitle = "Dodge-a-Bit!";
     int fontSize = 50;
     int textWidth = MeasureText(gameTitle, fontSize);
     DrawText(gameTitle, (GetScreenWidth() - textWidth) / 2, 150, fontSize, WHITE);
 
     playButton.Draw();
-    musicButton.Draw();
-    soundButton.Draw();
-    instructionsButton.Draw();
-    exitButton.Draw();
+    // musicButton.Draw();
+    // soundButton.Draw();
+    // instructionsButton.Draw();
+    // exitButton.Draw();
+    
+    const char* howToPlayText = "HOW TO PLAY :";
+    const char* moveDirText = "Move < >";
+    const char* dashText = "Dash with SHIFT";
+    const char* avoidBitsText = "Avoid bits of 1";
+    const char* surviveText = "Survive and score!";
+
+    int instrFont = 20;
+    int y = 400;
+
+    DrawText(howToPlayText, (GetScreenWidth() - MeasureText(howToPlayText, 25))/2, y, 25, WHITE);
+    DrawText(moveDirText, (GetScreenWidth() - MeasureText(moveDirText, instrFont))/2, y + 40, instrFont, WHITE);
+    DrawText(dashText, (GetScreenWidth() - MeasureText(dashText, instrFont))/2, y + 65, instrFont, WHITE);
+    DrawText(avoidBitsText, (GetScreenWidth() - MeasureText(avoidBitsText, instrFont))/2, y + 90, instrFont, WHITE);
+    DrawText(surviveText, (GetScreenWidth() - MeasureText(surviveText, instrFont))/2, y + 115, instrFont, WHITE);
+    
+    // DrawText("Move < and >", 100, y + 40, instrFont, WHITE);
+    // DrawText("Dash with SHIFT", 100, y + 50, instrFont, WHITE);
+    // DrawText("Avoid bits of 1", 100, y + 75, instrFont, WHITE);
+    // DrawText("Survive and score!", 100, y + 100, instrFont, WHITE);
 }
 
 std::string StartState::GetName() const {

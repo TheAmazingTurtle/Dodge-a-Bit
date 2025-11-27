@@ -10,7 +10,7 @@
 
 class GameOverState : public IGameState {
 public:
-    GameOverState(int finalScore, int highScore);
+    GameOverState(int finalScore, int highScore, bool hasNewHighScore);
 
     void Enter(Game& game);
     void Exit(Game& game);
@@ -26,6 +26,7 @@ private:
 
     int playerFinalScore;
     int recordedHighScore;
+    bool hasNewHighScore;
 
     Button mainMenuButton;
     Button tryAgainButton;

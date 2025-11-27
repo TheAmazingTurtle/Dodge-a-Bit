@@ -1,20 +1,36 @@
 #include "GameOverState.h"
+#include <emscripten.h> 
 
-GameOverState::GameOverState(int finalScore, int highScore) : playerFinalScore(finalScore), recordedHighScore (highScore), 
-    mainMenuButton("Main Menu", { 0,0 }, { 200, 60 }),
-    tryAgainButton("Try Again", { 0,0 }, { 200, 60 }),
-    exitButton("Exit", { 0,0 }, { 200, 60 }) {
+void SaveHighScore(int score) {
+#ifdef __EMSCRIPTEN__
+    EM_ASM({
+        localStorage.setItem('dodgeabit_highscore', $0);
+    }, score);
+#endif
+}
 
-        float centerX = (Config::SCREEN_WIDTH - 200) / 2;
-        float startY = 500;
-        float spacing = 80;
-
-        Button* buttons[] = { &mainMenuButton, &tryAgainButton, &exitButton };
-
-        for (int i = 0; i < 3; i++) {
-            buttons[i]-> SetPosition ({ centerX, startY + spacing * i });
+GameOverState::GameOverState(int finalScore, int highScore, bool hasNewHighScore) 
+    : playerFinalScore(finalScore), recordedHighScore (highScore), hasNewHighScore(hasNewHighScore),
+      mainMenuButton("Main Menu", {0,0}, {200,60}),
+      tryAgainButton("Try Again", {0,0}, {200,60}),
+      exitButton("Exit", {0,0}, {200,60})
+{
+    // Determine if it's a new high score
+    if (hasNewHighScore) {
+        SaveHighScore(recordedHighScore);
     }
+
+    // Setup buttons
+
+    float centerX = (Config::SCREEN_WIDTH - 200) / 2;
+    float startY = 500;
+    float spacing = 80;
+
+    Button* buttons[] = { &mainMenuButton, &tryAgainButton, &exitButton };
+    for (int i = 0; i < 3; i++) {
+        buttons[i]->SetPosition({ centerX, startY + spacing * i });
     }
+}
 
 void GameOverState::Enter(Game& game) {
 
@@ -45,9 +61,26 @@ void GameOverState::Update(Game& game, float deltaTime) {
 void GameOverState::Draw(Game& game) const {
     ClearBackground(BLACK);
 
-    const char* gameOverText = "Oops! You got zapped!";
-    int gameOverFontSize = 50;
-    int gameOverTextWidth = MeasureText(gameOverText, gameOverFontSize);
+    const char* headerText = "Oops!";
+    const char* subText = "You got zapped!";
+
+    int headerFontSize = 80;
+    int subFontSize = 60;
+
+    int headerWidth = MeasureText(headerText, headerFontSize);
+    int subWidth = MeasureText(subText, subFontSize);
+
+    int headerX = (GetScreenWidth() - headerWidth) / 2;
+    int subX = (GetScreenWidth() - subWidth) / 2;
+
+    int headerY = 150;   // higher on the screen
+    int subY = 240;      // below header
+
+    // Draw header in bright red
+    DrawText(headerText, headerX, headerY, headerFontSize, RED);
+
+    // Draw subtext in bright white
+    DrawText(subText, subX, subY, subFontSize, RED);
 
     // const char* highestWaveText = TextFormat("Wave Reached: %d", waveReached);
     // int highestWaveFontSize = 20;
@@ -60,14 +93,24 @@ void GameOverState::Draw(Game& game) const {
     int highScoreTextWidth = MeasureText(highScoreText, highScoreFontSize);
     int playerScoreTextWidth = MeasureText(playerScoreText, playerScoreFontSize);
 
-    DrawText(gameOverText, (GetScreenWidth() - gameOverTextWidth) / 2, 150, gameOverFontSize, RED);
+    // Shadow
+    // DrawText(gameOverText, (GetScreenWidth() - gameOverTextWidth) / 2 + 2, 152, gameOverFontSize, BLACK);
+    // // Main text
+    // DrawText(gameOverText, (GetScreenWidth() - gameOverTextWidth) / 2, 150, gameOverFontSize, RED);
     // DrawText(TextFormat("Highest Wave: %d", recordedHighestWave), baseX * 8.5, baseY + 8, 20, WHITE);
-    DrawText(playerScoreText,(GetScreenWidth() - playerScoreTextWidth) / 2, 300, playerScoreFontSize, WHITE);
-    DrawText(highScoreText,(GetScreenWidth() - highScoreTextWidth) / 2, 350, highScoreFontSize, GREEN);
+    DrawText(playerScoreText,(GetScreenWidth() - playerScoreTextWidth) / 2, 330, playerScoreFontSize, WHITE);
+    DrawText(highScoreText,(GetScreenWidth() - highScoreTextWidth) / 2, 380, highScoreFontSize, GREEN);
+
+    if (hasNewHighScore) {
+        const char* newHighText = "NEW HIGH SCORE!";
+        int fontSize = 20;
+        int textWidth = MeasureText(newHighText, fontSize);
+        DrawText(newHighText, (GetScreenWidth() - textWidth) / 2, 420, fontSize, YELLOW);
+    }
 
     mainMenuButton.Draw();
     tryAgainButton.Draw();
-    exitButton.Draw();
+    // exitButton.Draw();
 }
 
 std::string GameOverState::GetName() const {

@@ -37,6 +37,7 @@ private:
     int combo;
     int basePoints;
     int highScore;
+    bool hasNewHighScore;
     float animationTimer;
     bool breakingHeart;
     float breakTimer;

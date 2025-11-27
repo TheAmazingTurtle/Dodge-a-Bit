@@ -1,7 +1,15 @@
 #include "GameplayState.h"
-    
+#include <emscripten.h>
 
-GameplayState::GameplayState() : player(), turretOperator(), score(0), combo(0), basePoints(100), highScore(0), animationTimer(0.0f), breakingHeart(false), breakTimer(0.0f) {
+int LoadHighScore() {
+    return EM_ASM_INT({
+        var score = localStorage.getItem('dodgeabit_highscore');
+        return score ? parseInt(score) : 0;
+    });
+}
+
+
+GameplayState::GameplayState() : player(), turretOperator(), score(0), combo(0), basePoints(100), highScore(0), hasNewHighScore(false), animationTimer(0.0f), breakingHeart(false), breakTimer(0.0f) {
     backgroundImg = LoadTexture("../../graphics/game-background.png");
     heartSpriteSheet = LoadTexture("../../graphics/heart-spritesheet.png");
     heartFrame = {0.0f, 0.0f, Config::UNIT_SIZE, Config::UNIT_SIZE};
@@ -9,7 +17,7 @@ GameplayState::GameplayState() : player(), turretOperator(), score(0), combo(0),
 }
     
 void GameplayState::Enter(Game& game) {
-
+    highScore = LoadHighScore();
 }
 
 void GameplayState::Exit(Game& game){
@@ -52,8 +60,10 @@ void GameplayState::Update(Game& game, float deltaTime){
             const int points = basePoints * (1 + combo * 0.2f);  
 
             score += points;
-            if (score > highScore) highScore = score;
-
+            if (score > highScore) {
+                highScore = score;
+                hasNewHighScore = true;
+            }
             combo++;
         } else {
             combo = 0;
@@ -69,7 +79,7 @@ void GameplayState::Update(Game& game, float deltaTime){
         if (score > highScore){
             highScore = score;
         }
-        game.ChangeState(std::make_unique<GameOverState>(score, highScore));
+        game.ChangeState(std::make_unique<GameOverState>(score, highScore, hasNewHighScore));
     }
 }
 
@@ -90,7 +100,7 @@ void GameplayState::DrawHeadUpDisplay() const {
     const char* scoreText = TextFormat("Score: %d", score);
     const char* highScoreText = TextFormat("High Score: %d", highScore);
 
-    DrawText(scoreText, (Config::SCREEN_WIDTH - MeasureText(scoreText, hudFontSize))/2, hudOffsetY, hudFontSize, WHITE);
+    DrawText(scoreText, (Config::SCREEN_WIDTH - MeasureText(scoreText, hudFontSize))/2.2, hudOffsetY, hudFontSize, WHITE);
     DrawText(highScoreText, Config::SCREEN_WIDTH - MeasureText(highScoreText, hudFontSize) - screenPadding, hudOffsetY, hudFontSize, WHITE);
 
     // Draw lives
