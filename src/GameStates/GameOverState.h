@@ -11,6 +11,7 @@
 class GameOverState : public IGameState {
 public:
     GameOverState(int finalScore, int highScore, bool hasNewHighScore);
+    ~GameOverState() = default;
 
     void Enter(Game& game);
     void Exit(Game& game);

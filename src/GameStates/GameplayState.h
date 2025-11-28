@@ -6,12 +6,12 @@
 #include "../Entities/Player.h"
 #include "../Entities/TurretOperator.h"
 #include "../Utils/Config.h"
-
-#include <iostream>
+#include <emscripten.h>
 
 class GameplayState : public IGameState{
 public:
     GameplayState();
+    ~GameplayState();
     void Enter(Game& game);
     void Exit(Game& game);
     void Update(Game& game, float deltaTime) ;

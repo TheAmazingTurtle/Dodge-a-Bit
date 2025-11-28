@@ -2,7 +2,6 @@
 // #include <iostream>
 
 Button::Button(const char *buttonLabel, Vector2 buttonPosition, Vector2 buttonScale): label(buttonLabel), position(buttonPosition), scale(buttonScale), normalColor(DARKGRAY), hoverColor(GRAY), textColor(WHITE){}
-Button::~Button(){}
 
 void Button::Draw() const {
     Rectangle rect = {position.x,position.y,scale.x,scale.y};

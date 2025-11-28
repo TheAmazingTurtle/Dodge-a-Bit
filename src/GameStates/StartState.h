@@ -12,6 +12,7 @@
 class StartState : public IGameState{
 public:
     StartState();
+    ~StartState() = default;
 
     void Enter(Game& game);
     void Exit(Game& game);

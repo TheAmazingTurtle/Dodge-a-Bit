@@ -231,7 +231,7 @@ void TurretOperator::draw() const {
     const float yOperandPos = Config::SCREEN_HEIGHT/2 - OPERAND_BUBBLE_SIZE - m_textElevation;
     DrawTexturePro(m_bubbleSpriteSheet, m_bubbleSpriteFrame, {xOperandPos, yOperandPos, OPERAND_BUBBLE_SIZE, OPERAND_BUBBLE_SIZE}, {0.0f, 0.0f}, 0.0f, WHITE);
     
-    for (int i = 0; i < m_operand.length(); i++) {
+    for (size_t i = 0; i < m_operand.length(); i++) {
         const float xPos = (Config::SCREEN_WIDTH-Config::UNIT_SIZE*m_operand.length())/2.0f + i*Config::UNIT_SIZE;
         const float yPos = Config::SCREEN_HEIGHT/2.0f - m_textElevation;
 

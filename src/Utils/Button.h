@@ -4,7 +4,7 @@
 class Button {
 public:
     Button(const char *buttonLabel, Vector2 buttonPosition, Vector2 scale);
-    ~Button();
+    ~Button() = default;
 
     void Draw() const;
     bool IsPressed(Vector2 mousePos, bool isMousePressed) const;

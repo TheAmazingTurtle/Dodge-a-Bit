@@ -1,7 +1,5 @@
 #include "StartState.h"
 
-
-
 StartState::StartState() :
     playButton("Play", { 0,0 }, { 200, 60 }),
     musicButton("Music: ON", { 0,0 }, { 200, 60 }),
@@ -10,8 +8,6 @@ StartState::StartState() :
     exitButton("Exit", { 0,0 }, { 200, 60 }) {
         
         float centerX = (Config::SCREEN_WIDTH - 200) / 2;
-
-        std::cout << centerX << std::endl;
 
         float startY = 300;
         float spacing = 80;

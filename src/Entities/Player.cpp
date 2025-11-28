@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <iostream>
 
 Player::Player() : 
     m_position({Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT - Config::UNIT_SIZE}),
@@ -9,6 +10,7 @@ Player::Player() :
     m_direction(Direction::Right),
     m_frameCounter(0),
     m_dashTimer(0.0f),
+    m_tapTimer(0.0f),
     m_dashing(false),
     m_dying(false),
     m_dead(false) {
@@ -29,10 +31,34 @@ void Player::Update(float deltaTime) {
     PlayerState newState = PlayerState::IDLE;
 
     if (!m_dying) {
-        if (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT) || GetTouchPointCount() > 1) {
-            m_dashing = true;
+        int touchCount = GetTouchPointCount();
+        if (touchCount == 0) {
+            if (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT)) {
+                m_dashing = true;
+            }
+
+            if (m_tapTimer < DASH_ACTIVATED_DURATION) {
+                m_tapTimer += deltaTime;
+            }
+
+            m_touching = false;
+        } else {
+            std::cout << GetTouchPosition(0).x << ' ' << GetTouchPosition(1).x << '\n';
+
+            m_touching = true;
+
+            for (int i = 0; i < touchCount; ++i) {
+                Vector2 pos = GetTouchPosition(i);
+                if (pos.x <= Config::SCREEN_WIDTH / 2) m_direction = Direction::Left;
+                else m_direction = Direction::Right;
+            }
+
+            if (m_tapTimer < DASH_ACTIVATED_DURATION) {
+                m_dashing = true;
+                m_tapTimer = DASH_ACTIVATED_DURATION + 1;
+            }
         }
-        
+
         if (m_dashing) {
             newState = PlayerState::DASHING;
         } else if (IsKeyDown(KEY_LEFT)) {
@@ -41,14 +67,10 @@ void Player::Update(float deltaTime) {
         } else if (IsKeyDown(KEY_RIGHT)) {
             m_direction = Direction::Right;
             newState = PlayerState::WALKING;
-        } else if (GetTouchPointCount() == 0) {
-            // skip
-        } else if (GetTouchPosition(0).x <= Config::SCREEN_WIDTH/2) {
-            m_direction = Direction::Left;
+        } else if (touchCount > 0) {
             newState = PlayerState::WALKING;
-        } else if (GetTouchPosition(0).x > Config::SCREEN_WIDTH/2) {
-            m_direction = Direction::Right;
-            newState = PlayerState::WALKING;
+        } else {
+            newState = PlayerState::IDLE;
         }
         
         switch (newState)

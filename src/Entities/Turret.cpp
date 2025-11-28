@@ -12,6 +12,7 @@ Turret::Turret(const Vector2& basePos) :
 
 Turret::~Turret() {
     UnloadTexture(m_spriteSheet);
+    UnloadTexture(m_laserSpriteSheet);
 }
 
 void Turret::update(float deltaTime) { 

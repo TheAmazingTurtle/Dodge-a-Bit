@@ -1,5 +1,4 @@
 #include "GameplayState.h"
-#include <emscripten.h>
 
 int LoadHighScore() {
     return EM_ASM_INT({
@@ -14,6 +13,11 @@ GameplayState::GameplayState() : player(), turretOperator(), score(0), combo(0),
     heartSpriteSheet = LoadTexture("../../graphics/heart-spritesheet.png");
     heartFrame = {0.0f, 0.0f, Config::UNIT_SIZE, Config::UNIT_SIZE};
     brokenHeartFrame = {0.0f, Config::UNIT_SIZE, Config::UNIT_SIZE, Config::UNIT_SIZE};
+}
+
+GameplayState::~GameplayState() {
+    UnloadTexture(backgroundImg);
+    UnloadTexture(heartSpriteSheet);
 }
     
 void GameplayState::Enter(Game& game) {
@@ -68,8 +72,6 @@ void GameplayState::Update(Game& game, float deltaTime){
         } else {
             combo = 0;
         }
-
-        std::cout << turretOperator.isCycleFinished() << ' ' << player.IsHit() << ' ' << score << std::endl;
 
         player.ResetHitFlags();
         turretOperator.resetCycleFlag();
