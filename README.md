@@ -3,3 +3,5 @@ Dodge-a-Bit is a 2D logic-based arcade game that integrates concepts from the bi
 
 # Open the game through this link
 https://theamazingturtle.github.io/Dodge-a-Bit/
+
+<img src="https://github.com/TheAmazingTurtle/Dodge-a-Bit/blob/main/Dodge-a-Bit%20QR%20Code.png" width="300">
