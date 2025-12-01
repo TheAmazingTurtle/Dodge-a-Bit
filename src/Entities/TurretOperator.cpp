@@ -159,10 +159,10 @@ void TurretOperator::update(float deltaTime) {
 
     switch (m_numCycle) {
         case 0: m_progLvl = 1; break;
-        case 10: m_progLvl = 2; break;
-        case 15: m_progLvl = 3; break;
-        case 20: m_progLvl = 4; break;
-        case 25: m_progLvl = 5; break;
+        case 6: m_progLvl = 2; break;
+        case 9: m_progLvl = 3; break;
+        case 12: m_progLvl = 4; break;
+        case 16: m_progLvl = 5; break;
         default: break;
     }
 
