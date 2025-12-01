@@ -13,7 +13,8 @@ Player::Player() :
     m_tapTimer(0.0f),
     m_dashing(false),
     m_dying(false),
-    m_dead(false) {
+    m_dead(false),
+    m_touching(false) {
 
     m_spriteSheet = LoadTexture("../../graphics/player-spritesheet.png");
 
@@ -36,53 +37,48 @@ void Player::Update(float deltaTime) {
             if (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT)) {
                 m_dashing = true;
             }
+            m_touching = false;
 
-            if (m_tapTimer < DASH_ACTIVATED_DURATION) {
+            if (m_tapTimer < DASH_ACTIVE_TIME_FRAME) {
                 m_tapTimer += deltaTime;
             }
+        } else if (touchCount == 1) {
+            Vector2 pos = GetTouchPosition(0);
+            newState = PlayerState::WALKING;
+            
 
-            m_touching = false;
-        } else {
-            std::cout << GetTouchPosition(0).x << ' ' << GetTouchPosition(1).x << '\n';
+            if (!m_touching) {
+                if (m_tapTimer < DASH_ACTIVE_TIME_FRAME) {
+                    m_dashing = true;
+                }
 
-            m_touching = true;
-
-            for (int i = 0; i < touchCount; ++i) {
-                Vector2 pos = GetTouchPosition(i);
-                if (pos.x <= Config::SCREEN_WIDTH / 2) m_direction = Direction::Left;
-                else m_direction = Direction::Right;
+                m_touching = true;
+                m_tapTimer = 0.0f;
             }
 
-            if (m_tapTimer < DASH_ACTIVATED_DURATION) {
-                m_dashing = true;
-                m_tapTimer = DASH_ACTIVATED_DURATION + 1;
-            }
+            if (pos.x <= Config::SCREEN_WIDTH / 2) m_direction = Direction::Left;
+            else m_direction = Direction::Right;
         }
 
         if (m_dashing) {
             newState = PlayerState::DASHING;
+            
+            m_dashTimer += deltaTime;
+            if (m_dashTimer >= DASH_DURATION) {
+                m_dashTimer = 0.0f;
+                m_dashing = false;
+            }
         } else if (IsKeyDown(KEY_LEFT)) {
             m_direction = Direction::Left;
             newState = PlayerState::WALKING;
         } else if (IsKeyDown(KEY_RIGHT)) {
             m_direction = Direction::Right;
             newState = PlayerState::WALKING;
-        } else if (touchCount > 0) {
-            newState = PlayerState::WALKING;
-        } else {
-            newState = PlayerState::IDLE;
-        }
+        } 
         
-        switch (newState)
-        {
+        switch (newState) {
             case PlayerState::DASHING:
                 m_position.x += (m_direction == Direction::Right ? 1 : -1) * DASH_SPEED * deltaTime;
-
-                m_dashTimer += deltaTime;
-                if (m_dashTimer >= DASH_DURATION) {
-                    m_dashTimer = 0.0f;
-                    m_dashing = false;
-                }
                 break;
 
             case PlayerState::WALKING:

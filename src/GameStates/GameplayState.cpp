@@ -29,6 +29,9 @@ void GameplayState::Exit(Game& game){
 }
 
 void GameplayState::Update(Game& game, float deltaTime){
+    player.Update(deltaTime);
+    turretOperator.update(deltaTime);
+
     animationTimer += deltaTime;
     if (animationTimer >= 1.0f / HEART_FRAME_SPEED) {
         animationTimer = 0.0f;
@@ -50,9 +53,6 @@ void GameplayState::Update(Game& game, float deltaTime){
             }
         }
     }
-
-    player.Update(deltaTime);
-    turretOperator.update(deltaTime);
     
     if (!player.IsHit() && turretOperator.doTurretsHit(player.GetHitbox())) {
         player.TakeHit();

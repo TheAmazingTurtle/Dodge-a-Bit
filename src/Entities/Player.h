@@ -41,7 +41,7 @@ private:
 
     static constexpr float DASH_DURATION = 1.0f / FRAME_SPEED * DASHING_FRAME_COUNT;
     static constexpr float DYING_DURATION = 1.0f / FRAME_SPEED * DYING_FRAME_COUNT;
-    static constexpr float DASH_ACTIVATED_DURATION = 0.1f;
+    static constexpr float DASH_ACTIVE_TIME_FRAME = 0.1f;
     static constexpr float DASH_SPEED = 400.0f;
     static constexpr float WALK_SPEED = 200.0f;
     static constexpr int WIDTH = 48;
